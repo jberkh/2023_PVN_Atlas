@@ -1,0 +1,28 @@
+.
+├── 1-FromRaw
+│   ├── Beine2022.h5ad
+│   ├── Beine2022.rds
+│   ├── BeineOld.rds
+│   ├── Lewis2020.h5ad
+│   ├── Lewis2020.rds
+│   ├── Lopez2021.h5ad
+│   ├── Lopez2021.rds
+│   ├── Short2021.h5ad
+│   ├── Short2021.rds
+│   ├── Siletti2022.rds
+│   ├── Son2021.h5ad
+│   ├── Son2021.rds
+│   ├── Steuernagel2022.h5ad
+│   ├── Steuernagel2022.rds
+│   ├── Tao2021.rds
+│   ├── Xu2020.h5ad
+│   └── Xu2020.rds
+└── 2-Integration
+    ├── 1-Merged.h5ad
+    ├── 1-VAE.p
+    ├── 2-Subset.h5ad
+    ├── 3-Excluded.h5ad
+    ├── 4-Final.h5ad
+    └── 4-Final.rds
+
+2 directories, 23 files

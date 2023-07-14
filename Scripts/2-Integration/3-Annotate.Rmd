@@ -1,0 +1,115 @@
+---
+title: "Annotation"
+output: "html_document"
+---
+
+```{R Depends}
+knitr::opts_chunk$set(message = F, warning = F, results = "hide", echo = T)
+set.seed(1, sample.kind = "Rejection")
+
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(patchwork)
+  library(Matrix)
+  library(here)
+  PROJDIR <- here()
+  
+  library(Seurat)
+  library(anndata)
+  library(reticulate)
+  if (T) {condabin = "auto"}
+  else {condabin = "/share/software/tools/miniconda/3.8/4.9.2/condabin/conda"}
+  use_condaenv("2023_PVN_Atlas", conda = condabin)
+  
+  #Package w/ own functions
+  library(RExtra)
+  library(SeuratExtra)
+})
+```
+  
+  
+```{R Imports, eval = T, echo = T, message = F, results = "hide"}
+# Get dataset
+adata <- anndata::read_h5ad(here("Output/Data/2-Integration/2-Subset.h5ad"))
+df <- CreateSeuratObject(as.matrix(t(adata$X)), meta.data = adata$obs) %>%
+  NormalizeData()
+df[["mde"]] <- adata$obsm$X_mde %>% 
+  (\(x) {row.names(x) <- colnames(df); x})(.) %>%
+  CreateDimReducObject(., key = "MDE", global = T)
+df[["vae"]] <- adata$obsm$X_vae %>% 
+  (\(x) {row.names(x) <- colnames(df); x})(.) %>%
+  CreateDimReducObject(., key = "VAE", global = F)
+df@reductions$umap <- df@reductions$mde
+```
+
+```{R GC1, eval=T, echo=F, message=F, results="hide"}
+gc = gc()
+rm(gc)
+```
+  
+## Subset Threshold
+- Only clusters with 5+ Xu2020 cells were annotated
+- If subclustered, only subclusters with 1+ Xu2020 cells were annotated  
+- If subcluster was most highly enriched for several mito genes, cluster was not annotated  
+- Exception was made for cluster 17  
+  - Only cluster 17 expresses Ucn3.  
+  - ABA ISH Data shows compelling evidence for Ucn3 presence in PVN (https://edu.nl/9gqhd)  
+  - Hence, an exception was made for this cluster.  
+
+```{R Where_Xu, eval=T, echo=T, message=T, results = "hold"}
+df[[c("leiden","is_Xu2020")]] %>% table() %>% t() %>% knitr::kable()
+```
+  
+```{R Annotate, eval=T, echo=T, message=F, results="hide"}
+Idents(df) <- df$leiden
+
+df <- df %>%
+  FindNeighbors(reduction = "vae", dims = 1:20, k.param = 30L) %>%
+  FindSubCluster("0", resolution = 0.33) %>%
+  RenameIdents("0_0" = "Avp-Tac1") %>%
+  RenameIdents("0_1" = "Avp-Th") %>%
+  RenameIdents("0_2" = "Low_Quality") %>%
+  RenameIdents("0_3" = "Low_Quality") %>%
+  RenameIdents("1" = "Below_Threshold") %>%    # Trh-Ebf1
+  RenameIdents("2" = "Below_Threshold") %>%    # Tafa1-Slc17a6
+  RenameIdents("3" = "Slc32a1-Dlx1") %>%
+  RenameIdents("4" = "Below_Threshold") %>%    # Erbb4-Npas3 
+  RenameIdents("5" = "Below_Threshold") %>%    # Gsc-Otp
+  FindSubCluster("6", resolution = 0.33) %>%
+  RenameIdents("6_0" = "Crh-Nr3c1") %>%
+  RenameIdents("6_1" = "Sst-Calb2") %>%
+  RenameIdents("6_2" = "Sst-Sfrp2") %>%
+  RenameIdents("6_3" = "Trh-Nfib") %>%
+  RenameIdents("7" = "Trh-Zic1") %>% 
+  RenameIdents("8" = "Below_Threshold") %>%    # Penk-Ntng1
+  RenameIdents("9" = "Below_Threshold") %>%    # Tac1-Ebf1
+  FindSubCluster("10", resolution = 0.33) %>%
+  RenameIdents("10_0" = "Trh-Tac1") %>%
+  RenameIdents("10_1" = "Trh-Ghrh") %>%
+  RenameIdents("10_2" = "Trh-Omp") %>%
+  FindSubCluster("11", resolution = 0.66) %>%
+  RenameIdents("11_0" = "Asb4-Adarb2") %>%
+  RenameIdents("11_1" = "Oxt-Adarb2") %>%
+  RenameIdents("11_2" = "Slc17a6-Adarb2") %>%
+  RenameIdents("11_3" = "Brs3-Adarb2") %>%
+  RenameIdents("11_4" = "Below_Threshold") %>%
+  RenameIdents("11_5" = "Avp-Adarb2") %>%
+  RenameIdents("12" = "Oxt-Foxp1") %>%
+  RenameIdents("13" = "Tcf7l2-Shox2") %>%
+  RenameIdents("14" = "Crh-Adarb2") %>%
+  RenameIdents("15" = "Penk-Adarb2") %>%
+  RenameIdents("16" = "Below_Threshold") %>%   # Npy-Npw
+  RenameIdents("17" = "Trh-Ucn3") %>%
+  RenameIdents("18" = "Below_Threshold") %>%   # Nkain2-Adarb2
+  RenameIdents("19" = "Below_Threshold")       # Erbb4-Adarb2
+
+export <- as.character(Idents(df))
+```
+
+```{python Save, eval=T, echo=T, message=T, results="hold"}
+import os.path as path
+output = path.join(r.PROJDIR, "Output/Data/2-Integration/2-Subset.h5ad")
+
+r.adata.obs["annotated"] = r.export
+r.adata.write_h5ad(output)
+```

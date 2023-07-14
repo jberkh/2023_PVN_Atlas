@@ -1,0 +1,40 @@
+.
+├── Beine2022
+│   ├── GSE212409_RAW.tar
+│   ├── Sample1
+│   │   ├── barcodes.tsv.gz
+│   │   ├── features.tsv.gz
+│   │   └── matrix.mtx.gz
+│   ├── Sample2
+│   │   ├── barcodes.tsv.gz
+│   │   ├── features.tsv.gz
+│   │   └── matrix.mtx.gz
+│   └── Sample3
+│       ├── barcodes.tsv.gz
+│       ├── features.tsv.gz
+│       └── matrix.mtx.gz
+├── Lewis2020
+│   ├── cellAnnotation.tsv
+│   ├── expression_matrix.tsv
+│   └── featureAnnotation.tsv
+├── Lopez2021
+│   ├── GSM4914022_PVN_CTRL_barcodes.tsv.gz
+│   ├── GSM4914022_PVN_CTRL_genes.tsv.gz
+│   ├── GSM4914022_PVN_CTRL_matrix.mtx.gz
+│   ├── GSM4914023_PVN_STRESS_barcodes.tsv.gz
+│   ├── GSM4914023_PVN_STRESS_genes.tsv.gz
+│   └── GSM4914023_PVN_STRESS_matrix.mtx.gz
+├── Short2021
+│   └── GSE174085_new_allcells111620.matrix.txt.gz
+├── Son2021
+│   └── GSM5076376_Sim1td_Cont_DGE.txt
+├── Steuernagel2022
+│   └── CELLxGENE_HypoMap.rds
+├── Tao2021
+│   ├── DMV
+│   └── GSE172411_dge.tsv.gz
+└── Xu2020
+    ├── GSE148568_cell_metadata_after_qc.csv.gz
+    └── GSE148568_compiled_data.csv.gz
+
+11 directories, 26 files

@@ -1,0 +1,13 @@
+.gitignore
+Article/
+Data/**
+!Data/.tree
+Output/Data/**
+!Output/Data/.tree
+renv/**
+!renv/RExtra_*.tar.gz
+!renv/SeuratExtra_*.tar.gz
+.Rhistory
+.RData
+.Rprofile
+.Rproj.user/
