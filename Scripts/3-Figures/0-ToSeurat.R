@@ -34,8 +34,17 @@ df[["vae"]] <- adata$obsm$X_vae %>%
 idents <- as.character(df$annotated)
 idents[is.na(idents)] <- "Beine2022"
 Idents(df) <- idents
-levels(df) <- sort(levels(df))
 
 VariableFeatures(df) <- adata$uns$highly_variable
+
+# Revision change: Small error in integration pipeline was corrected
+# This lead to Oxt-Adarb2 clearly displaying two subclusters
+# The subclusters are separated here 
+df <- df %>%
+  FindNeighbors(reduction = "vae", dims = 1:20, k.param = 50L) %>%
+  FindSubCluster("Oxt-Adarb2") %>%
+  RenameIdents("Oxt-Adarb2_0" = "Oxt-Adarb2") %>%
+  RenameIdents("Oxt-Adarb2_1" = "Ghrh-Adarb2")
+levels(df) <- sort(levels(df))
 
 saveRDS(df, here("Output/Data/2-Integration/4-Final.rds"))

@@ -43,8 +43,8 @@ df <- df %>%
   NormalizeData() %>%
   ScaleData() 
 
-# Panel A (Upper)
-SFig1A <- function(df) {
+# Panel A
+SFig2A <- function(df) {
   p <- DimPlot(df) +
     theme_bw() +
     theme(
@@ -54,11 +54,11 @@ SFig1A <- function(df) {
     )
   return(p)
 }
-SFig1A(df)
+SFig2A(df)
 
 # Save PNG
-png(here("Output/Figures/SFig1A.png"), 
+png(here("Output/Figures/FigS2A.png"), 
     res = 450, height = 18, width = 16, units = "cm")
-SFig1A(df)
+SFig2A(df)
 dev.off()
 

@@ -9,8 +9,6 @@ suppressPackageStartupMessages({
   PROJDIR <- here()
   
   library(Seurat)
-  library(reticulate)
-  use_condaenv("2023_PVN_Atlas")
   
   #Package w/ own functions
   library(RExtra)
@@ -30,20 +28,26 @@ theme_violin <- function() {
     legend.position = "none"
   ))
 }
-
-# Panel A
-SFig4A <- function(df) {
-  df <- df[,Idents(df) %in% c("Avp-Tac1","Avp-Th")]
+# Panel B
+FigS4A <- function(df) {
   Markers = c("Avp","Tac1","Th","Ddc")
-  p <- VlnPlot(df, Markers, ncol = 1) &
+  p <- FeaturePlot(df, Markers, reduction = "mde", combine = F)
+  p <- patchwork::wrap_plots(p, ncol = 2) + 
+    plot_layout(guides = "collect") &
+    scale_color_gradient(low = "#D3D3D3", high = "#100DFE", na.value = "#100DFE", 
+                         limits = c(0,4), labels = c(0:3, "4+")) &
     theme_bw() &
-    theme_violin()
+    theme(
+      panel.grid = element_blank(),
+      plot.title = element_text(hjust = 0.5, face = "italic"),
+      legend.position = "right",
+    )
   return(p)
 }
-SFig4A(df)
+FigS4A(df)
 
 # Panel B
-SFig4B <- function(df) {
+FigS4B <- function(df) {
   df <- df[,Idents(df) %in% c("Sst-Sfrp2","Sst-Calb2")]
   Markers = c("Sst","Calb1","Calb2","Kcnip4","Gpr101","Sfrp2","Ar","Npy1r","Mc4r")
   p1 <- VlnPlot(df, Markers[1], ncol = 1) &
@@ -59,16 +63,16 @@ SFig4B <- function(df) {
   p <- wrap_plots(p1,p2,p3, heights = c(0.25,1.75,0.25))
   return(p)
 }
-SFig4B(df)
+FigS4B(df)
 
 # Save PNG
-png(here("Output/Figures/SFig4A.png"), 
-    res = 450, height = 25, width = 17, units = "cm")
-SFig4A(df)
+png(here("Output/Figures/FigS4A.png"), 
+    res = 450, height = 20, width = 22, units = "cm")
+FigS4A(df)
 dev.off()
 
-png(here("Output/Figures/SFig4B.png"), 
-    res = 300, height = 25, width = 15, units = "cm")
-SFig4B(df)
+png(here("Output/Figures/FigS4B.png"), 
+    res = 300, height = 25, width = 12, units = "cm")
+FigS4B(df)
 dev.off()
 

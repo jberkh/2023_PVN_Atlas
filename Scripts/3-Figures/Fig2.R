@@ -39,17 +39,21 @@ as_dataframe <- function(df, genes, subtypes) {
   return(df)
 }
 
-pallette  <- c("None" = "#AAAAAA","Avp" = "#E69F00", "Crh" = "#56B4E9", 
-               "Oxt" = "#009E73", "Sst" = "#F0E442", "Penk" = "#D55E00",
-               "Trh" = "#CC79A7")
+pallette  <- c("None" = "#AAAAAA",
+               "Avp"  = "#E69F00", "Crh" = "#F0E442", 
+               "Ghrh" = "#D55E00", "Oxt" = "#0072B2", 
+               "Penk" = "#56B4E9", "Sst" = "#CC79A7",
+               "Trh"  = "#009E73")
 
 # Panel A
 Fig2A <- function(df) {
   df$Neuropeptide <- str_remove(Idents(df), "-.*$")
   df$Neuropeptide[df$Neuropeptide == "Brs3"] <- "Trh"
   df$Neuropeptide[df$Neuropeptide %in% c("Asb4","Slc17a6")] <- "None"
+  df$Neuropeptide <- factor(df$Neuropeptide, c("None", sort(unique(df$Neuropeptide))[-4]))
   p <- DimPlot(df, group.by = "Neuropeptide", reduction = "mde") +
     scale_color_manual(values = pallette) +
+    guides(color = guide_legend(byrow = T, override.aes = list(size = 3))) +
     theme_bw() +
     theme(
       plot.title = element_text(size = 16, hjust = 0.5),
@@ -62,7 +66,7 @@ Fig2A(df)
 
 # Panel B
 Fig2B <- function(df) {
-  Neuropeptides <- c("None","Avp" * 3,"Trh","Crh" * 2,"Oxt" * 2,"Penk","None","Sst" * 2,"Trh" * 5)
+  Neuropeptides <- c("None","Avp" * 3,"Trh","Crh" * 2, "Ghrh","Oxt" * 2,"Penk","None","Sst" * 2,"Trh" * 5)
   Pallette  <- pallette
   VarFeat <- VariableFeatures(df)
   Expr <- log1p(AverageExpression(df, "RNA", VarFeat, slot = "data")$RNA)
